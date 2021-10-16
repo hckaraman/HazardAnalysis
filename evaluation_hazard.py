@@ -324,7 +324,7 @@ def evaluation_hazard(lon, lat, name='Atlar', sector='Dolasiyor'):
 """
 27.37124,39.11272
 """
-if __name__ == '__main__':
+# if __name__ == '__main__':
     # asset = pd.DataFrame()
     # asset = {
     #     'name': 'at',
@@ -333,12 +333,12 @@ if __name__ == '__main__':
     #     'sector': 'Energy'
     # }
     # # lon,lat = 29,39
-    lon = 27.8593
+    # lon = 27.8593
     # lon = float(sys.argv[1])
-    lat = 37.7931
+    # lat = 37.7931
     # lat = float(sys.argv[2])
     #
-    res = evaluation_hazard(lon, lat)
-    print("a")
+    # res = evaluation_hazard(lon, lat)
+    # print("a")
     # print("This is the name of the program:", sys.argv[1])
     # print("This is the name of the program:", sys.argv[2])

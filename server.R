@@ -14,73 +14,9 @@ options(digits=6)
 function(input, output, session){
   
   
-  v <- function(station) {
-    # df.1 <- df[which(df$Name == id),]
-    query = str_interp("SELECT * FROM discharge where station = '${station}';")
-    df = dbGetQuery(con, query)
-    x <- df$discharge
-    x1 <- replace(x,is.na(x),0)
-    df$Dischage <- as.numeric(x1)
-    df$date <- as.Date(df$date)
-    # df$Month <- months(df$date)
-    # df$Year <- format(df$date,format="%y")
-    df <- rapply(object = df, f = round, classes = "numeric", how = "replace", digits = 6) 
-
-    
-    dfm <- df %>%
-      select(date,Dischage) %>%
-      group_by(lubridate::month(date),lubridate::year(date) ) %>%
-      summarise(month_average = mean(Dischage))
-    names(dfm) <- c("month","year","Dischage")
-    dfm$date <- with(dfm, sprintf("%d-%02d-01", year, month))
-    dfmx = xts(dfm$Dischage, order.by=as.Date(dfm$date))
-    # dfm <- aggregate( X2 ~ Month + Year , df , mean )
-    dfx = xts(df$Dischage, order.by=as.Date(df$date))
-    
-    
-    x <-na.omit(df$discharge)
-    x <- as.numeric(x)
-    x.old <- x
-    x <- sort(x)
-    x.zero.index <- which(x==0)
-    nzeros <- length(x.zero.index)
-    ind <- match(x.old, x)
-    n <- length(x)
-    dc <- rep(NA, n)
-    dc[1:n] <- sapply(1:n, function(j,y) {
-      dc[j] <- length( which(y >= y[j]) )
-    }, y = x)
-    dc <- dc/n
-    fdr<-data.frame(x=dc,y=x)
-    
-    
-    data.1 <- stats(df,station)
-    start_year <- year(data.1$Date[1])
-    
-    flow_stats <- calc_daily_stats(data.1, 
-                                   start_year = start_year,ignore_missing = TRUE )
-    
-    flow_plot <- plot_daily_stats(data.1, 
-                                  start_year = start_year,ignore_missing = TRUE)
-    
-    
-    res <- list()
-    res$df <- df
-    res$dfx <- dfx
-    res$dfmx <- dfmx
-    res$fdr <- fdr
-    res$flow_stats <- flow_stats
-    res$flow_plot <- flow_plot
-    res$lat <- 37
-    res$lon <- 38
-    # print(lat)
-    return(res)
-  }
-  
-  
   reactive_objects=reactiveValues()
-  reactive_objects$result <-  v("03-13") 
-  reactive_objects$station <- "03-13"
+  # reactive_objects$result <-  v("03-13") 
+  # reactive_objects$station <- "03-13"
   reactive_objects$lon <- 37
   reactive_objects$lat <- 38
   reactive_objects$df <- initial.result
