@@ -17,10 +17,6 @@ river_file <- './data/river.geojson'
 stations <-  rgdal::readOGR(station_file)
 rivers <-  rgdal::readOGR(river_file)
 
-
-
-
-
 HAZARD = c("EARTHQUAKE",
            "FLOOD",
            "WIND",

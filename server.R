@@ -8,12 +8,8 @@ library(leaflet.extras)
 library(shinybusy)
 options(digits=6)
 
-
-
-
 function(input, output, session){
-  
-  
+
   reactive_objects=reactiveValues()
   # reactive_objects$result <-  v("03-13") 
   # reactive_objects$station <- "03-13"
@@ -21,9 +17,6 @@ function(input, output, session){
   reactive_objects$lat <- 38
   reactive_objects$df <- initial.result
  
-  
-
-  
   map = leaflet::createLeafletMap(session, 'map')
   
   session$onFlushed(once = T, function() {
@@ -43,28 +36,7 @@ function(input, output, session){
         addProviderTiles(providers$Esri.WorldImagery, group = "Esri Sattelite") %>%
         addProviderTiles(providers$OpenStreetMap.HOT, group = "OSM HOT") %>%
         addProviderTiles(providers$Stamen.TonerLite, group = "Toner Lite") %>%
-      # leaflet() %>%
-        # addProviderTiles("Esri.WorldImagery") %>%
         setView(lng = 35, lat = 35, zoom = 6) %>%
-        # addMarkers(
-        #   data = stations,
-        #   # label = paste0(pond_point$Name),
-        #   popup = paste0(
-        #     "<b>Name: </b>"
-        #     , stations$Name
-        #     , "<br>"
-        #     ,"<b>Station No: </b>"
-        #     , stations$Station
-        #     , "<br>"
-        #     ,"<b>Elevation : </b>"
-        #     , stations$Elevation ," m"
-        #     , "<br>"
-        #     ,"<b>Basin Area: </b>"
-        #     , stations$Basin_Area , "m"
-        #   ),
-        #   # labelOptions = labelOptions(noHide = F),
-        #   layerId = ~Station,
-        #   clusterOptions = markerClusterOptions()) %>%
         setMaxBounds( lng1 = 25
                       , lat1 = 35
                       , lng2 = 45
@@ -207,61 +179,10 @@ function(input, output, session){
     })
     
     
-    output$flowdur <- renderHighchart({
-      
-      station <- reactive_objects$station
-      # result <- v(station)
-      fdr <- reactive_objects$result$fdr
-      fdr$x <- fdr$x * 1e2
-      
-      
-      
-      # reactive_objects=reactiveValues()
-      # reactive_objects$result <-  v("03-13") 
-      # reactive_objects$station <- "03-13"
-      
-      
-      # highchart(type = "stock") %>% 
-      #   hc_yAxis_multiples(create_yaxis(2, height = c(1, 1), turnopposite = TRUE)) %>% 
-      #   hc_title(text = paste("Observed discharge at station : ",station)) %>%
-      #   hc_add_series(result$dfx, yAxis = 0,name = "Daily Mean") %>%
-      
-      #   hc_add_series(result$dfmx, yAxis = 1,name = "Monthly Mean") %>%
-      #   # hc_add_yAxis(nid = 1L, title = list(text = "Discharge m3/s"), relative = 4) %>%
-      #   hc_xAxis(
-      #     type = 'datetime') %>%
-      #   hc_legend(enabled = TRUE) %>%
-      #   hc_tooltip(
-      #     crosshairs = TRUE,
-      #     backgroundColor = "#F0F0F0",
-      #     shared = TRUE, 
-      #     borderWidth = 5
-      #   )
-      highchart() %>%
-        hc_add_series(data = fdr, name = "", type = "line", hcaes(x = x, y = y)) %>%
-        hc_yAxis(type = "logarithmic",title = list(text = "Discharge, m3/s")) %>%
-        hc_xAxis(labels = list(format = "{value}%"),title = list(text = "% Time flow equalled or exceeded")) 
-      
-    })
-    
-    output$plot2<-renderPlot({
-      
-      reactive_objects$result$flow_plot
-      
-    })
-    
     output$caption <- renderText({ paste("lon : ",reactive_objects$lon," lat : ",reactive_objects$lat, sep='') })
 
     
     output$table <- DT::renderDataTable({
-      
-      # station <- reactive_objects$Station
-      # # df <- data[which(data$Station == station),]
-      # query = str_interp("SELECT * FROM discharge where station = '${station}';")
-      # df = dbGetQuery(con, query)
-      # df$Dischage <- as.numeric(df$dischage)
-      # result <- reactive_objects$result
-      
       df <- reactive_objects$df
       DT::datatable(df,  extensions = 'Buttons',options = list(dom = 'Blfrtip',
                                                                buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
@@ -273,43 +194,10 @@ function(input, output, session){
     )
     
     
-    output$flowstats <- DT::renderDataTable({
-      
-      # station <- reactive_objects$Station
-      # # df <- data[which(data$Station == station),]
-      # query = str_interp("SELECT * FROM discharge where station = '${station}';")
-      # df = dbGetQuery(con, query)
-      # df$Dischage <- as.numeric(df$dischage)
-      # result <- reactive_objects$result
-      
-      # df <- reactive_objects$result$df 
-      # df <- select(df,"date","Dischage")
-      # row.names(df) <- NULL
-      # reactive_objects$result$flow_stats
-      DT::datatable(reactive_objects$result$flow_stats,  extensions = 'Buttons',options = list(dom = 'Blfrtip',
-                                                                       scrollX=T,
-                                                               buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
-                                                               lengthMenu = list(c(10,25,50,-1),
-                                                                                 c(10,25,50,"All"))))
-    },
-    options = 
-      list(sPaginationType = "two_button")
-    )
     
   })
-  # 
-  # observe({
-  #   click <- input$map_marker_click
-  #   if (is.null(click)){return()}
-  #   p <- input$map_marker_click$id
-  #   # siteid=site_click$id
-  #   # reactive_objects$sel_mlid=siteid
-  #   reactive_objects$station=p
-  #   reactive_objects$result=v(p)
-  #   reactive_objects$lat <- click$lat
-  #   reactive_objects$lon <- click$lon
-  #   print(reactive_objects$lat)
-  # })
+
+
   
   observeEvent(input$gobutton, {
     # showModal(modalDialog("Doing a function", footer=NULL))
@@ -324,13 +212,9 @@ function(input, output, session){
     reactive_objects$df <- res
     print("ended")
     remove_modal_spinner() # remove it when done
-    
-    # removeModal()
   })
   
 
-  
-  
   observeEvent(input$map_click, {
     click = input$map_click
     leafletProxy('map')%>%addMarkers(lng = click$lng, lat = click$lat, layerId = 'id')
@@ -353,11 +237,6 @@ function(input, output, session){
       lng = df.1$lon,
       lat = df.1$lat,
       zoom = 16) 
-    # 
-    # reactive_objects$station=input$auto1
-    # reactive_objects$result=v(p)
-    # print(reactive_objects$station)
-    
   })
   
 }
