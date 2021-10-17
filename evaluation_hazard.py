@@ -314,7 +314,7 @@ def evaluation_hazard(lon, lat, name='Atlar', sector='Dolasiyor'):
         else:
             logger.WARN("unhandled hazard '%s'" % h)
 
-    result.to_csv('Result.csv')
+    # result.to_csv('Result.csv')
     # return hazard_functions, hazard_parameters
     return result
 

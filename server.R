@@ -50,6 +50,12 @@ function(input, output, session){
                     options = WMSTileOptions(format = "image/png", transparent = TRUE)
                     # group = "Lines"
         ) %>%
+        # addWMSTiles( "http://194.163.139.124:8600/geoserver/hazard/wms",
+        addWMSTiles( "http://172.17.0.3:8080/geoserver/hazard/wms",
+                     layers = "Q500_Depth",
+                     options = WMSTileOptions(format = "image/png", transparent = TRUE),
+                     group = "Depth"
+        ) %>%
       addMeasure(
           position = "topleft",
           primaryLengthUnit = "meters",
