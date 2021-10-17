@@ -6,6 +6,8 @@ library(highcharter)
 library(xts)
 library(leaflet.extras)
 library(shinybusy)
+library(leaflet.extras2)
+
 options(digits=6)
 
 function(input, output, session){
@@ -56,6 +58,12 @@ function(input, output, session){
                      options = WMSTileOptions(format = "image/png", transparent = TRUE),
                      group = "Depth"
         ) %>%
+      # addControl(paste0("<img src=","http://194.163.139.124:8600/geoserver/hazard/ows?service=WMS&request=GetLegendGraphic&format=image/png&width=20&height=20&layer=Q500_Depth&style=depth&", ">"),position = "bottomleft") %>%
+        addWMSLegend(
+          uri = paste0(
+            "http://194.163.139.124:8600/geoserver/hazard/ows?service=WMS&request=GetLegendGraphic&format=image/png&width=20&height=20&layer=Q500_Depth&style=depth&"
+          ),position = "bottomleft",
+        ) %>%
       addMeasure(
           position = "topleft",
           primaryLengthUnit = "meters",
@@ -65,17 +73,30 @@ function(input, output, session){
         leaflet.extras::addResetMapButton() %>%
         addLayersControl(
           baseGroups = c("Esri Sattelite", "OSM HOT", "Toner Lite"),
+          overlayGroups = c("Depth"),
           options = layersControlOptions(collapsed = T),
           position = c( "bottomright"),
         ) %>%
         leaflet.extras:: addDrawToolbar(
           targetGroup = "draw",
           editOptions = editToolbarOptions(selectedPathOptions = selectedPathOptions()))  %>%
-          leaflet.extras::addStyleEditor()
-      
-      
-      
-      
+          leaflet.extras::addStyleEditor() %>%
+        leaflet.extras2::addWMS(baseUrl = "http://194.163.139.124:8600/geoserver/hazard/wms",
+               layers = c("Q500_Depth"),
+               # layers = c("OSM-Overlay-WMS"),
+               group = "wmsgroup",
+               options = leaflet::WMSTileOptions(
+                 transparent = TRUE,
+                 format = "image/png",
+                 info_format = "text/html",
+                 tiled = FALSE
+               ))
+        # addLayersControl(baseGroups = "base",
+        #                  # overlayGroups = c("wmsgroup"))
+        #                  overlayGroups = c("Q500_Depth"))
+        # 
+  
+
     })
     
     output$earth <- renderHighchart({
